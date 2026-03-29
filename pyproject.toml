@@ -4,6 +4,7 @@ version = "1.0.0"
 description = "Enterprise Tax Agent for Bharat Biz platform with LangGraph, MCP, and TinyFish integration."
 dependencies = [
     "langgraph>=0.0.1",
+    "langgraph-checkpoint-postgres",
     "langchain>=0.1.0",
     "langchain-aws",
     "langchain-huggingface",
