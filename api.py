@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Any, Dict
 from graph import tax_app
@@ -6,11 +7,25 @@ from state import TaxAgentState
 
 app = FastAPI(title="Bharat Biz Tax Agent A2A Server")
 
+# Allow CORS for local frontend testing
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class AgentTaskRequest(BaseModel):
     task_id: str
     framework: str
     raw_inputs: list
     approval_status: str = "pending"
+    documents: list = []
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
 @app.post("/v1/execute")
 async def execute_tax_task(request: AgentTaskRequest):
@@ -21,7 +36,8 @@ async def execute_tax_task(request: AgentTaskRequest):
         "task_id": request.task_id,
         "framework": request.framework,
         "raw_inputs": request.raw_inputs,
-        "human_approval_status": request.approval_status
+        "human_approval_status": request.approval_status,
+        "documents": request.documents
     }
     
     # Run the graph

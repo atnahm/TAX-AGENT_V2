@@ -8,6 +8,7 @@ class TaxAgentState(TypedDict):
     task_id: str
     framework: str # e.g., "ITR-4", "GSTR-3B"
     raw_inputs: List[Dict[str, Any]] # Raw data from ML ingestion or MCP
+    documents: List[Dict[str, Any]] # Uploaded documents
     normalized_ledger: Dict[str, Any]
     external_web_context: Dict[str, Any] # Data from TinyFish
     applicable_rules: List[str] # Retrieved from Qdrant
