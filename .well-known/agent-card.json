@@ -1,0 +1,22 @@
+{
+    "agent_name": "Bharat Biz Tax Agent",
+    "version": "1.0.0",
+    "description": "Deterministic, graph-based agent for Indian tax compliance (ITR-4, GSTR-3B). Includes ML-powered ingestion and AI-driven financial analysis.",
+    "capabilities": [
+        "ITR-4 Computation",
+        "GSTR-3B Reconciliation",
+        "ML Data Ingestion",
+        "Financial Balance Sheet Generation",
+        "Tax Risk Analysis"
+    ],
+    "interfaces": {
+        "A2A": {
+            "endpoint": "/v1/execute",
+            "protocol": "JSON-RPC 2.0"
+        }
+    },
+    "compliance": {
+        "SOC2": "Enabled (Immutable SQL Ledger)",
+        "DPDP_Act_2023": "Enforced (Data Minimization & User Consent)"
+    }
+}

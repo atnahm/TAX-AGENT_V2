@@ -1,0 +1,90 @@
+services:
+  # ===== Tax Agent API =====
+  tax-agent:
+    build: .
+    container_name: tax-agent-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      weaviate:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - tax-network
+    restart: unless-stopped
+
+  # ===== Qdrant (Semantic RAG Vector DB) =====
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: tax-agent-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tax-network
+    restart: unless-stopped
+
+  # ===== Weaviate (Multi-modal Vector DB) =====
+  weaviate:
+    image: cr.weaviate.io/semitechnologies/weaviate:1.28.4
+    container_name: tax-agent-weaviate
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      PERSISTENCE_DATA_PATH: "/var/lib/weaviate"
+      CLUSTER_HOSTNAME: "node1"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/.well-known/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tax-network
+    restart: unless-stopped
+
+  # ===== PostgreSQL (LangGraph Checkpointing) =====
+  postgres:
+    image: postgres:16-alpine
+    container_name: tax-agent-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tax_agent_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d tax_agent_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tax-network
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+  weaviate_data:
+  postgres_data:
+
+networks:
+  tax-network:
+    driver: bridge

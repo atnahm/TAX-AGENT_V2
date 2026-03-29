@@ -1,0 +1,25 @@
+[project]
+name = "tax-agent"
+version = "1.0.0"
+description = "Enterprise Tax Agent for Bharat Biz platform with LangGraph, MCP, and TinyFish integration."
+dependencies = [
+    "langgraph>=0.0.1",
+    "langchain>=0.1.0",
+    "langchain-aws",
+    "langchain-huggingface",
+    "sentence-transformers",
+    "easyocr",
+    "torch",
+    "boto3",
+    "fastapi",
+    "uvicorn",
+    "psycopg2-binary",
+    "weaviate-client",
+    "qdrant-client",
+    "agentql",
+    "pydantic",
+    "python-dotenv",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
